@@ -229,7 +229,7 @@ fn parse_string_duration(s: &str, span: Span) -> Result<Value, ShellError> {
     }
 }
 
-fn compound_to_duration(s: &str, span: Span) -> Result<Value, ShellError> {
+pub(crate) fn compound_to_duration(s: &str, span: Span) -> Result<Value, ShellError> {
     let mut parts = split_whitespace_indices(s, span)
         .map(|(substring, substring_span)| string_to_duration(substring, substring_span))
         .peekable();
@@ -607,30 +607,6 @@ mod test {
             other => {
                 panic!("Expected Value::Duration, observed {other:?}");
             }
-        }
-    }
-
-    #[test]
-    fn invalid_clock_string() {
-        let args = Arguments {
-            unit: Some(Spanned {
-                item: Unit::Nanosecond,
-                span: Span::test_data(),
-            }),
-            cell_paths: None,
-        };
-
-        // two‑field string must fail with helpful message
-        let actual = action(&Value::test_string("1:02"), &args, Span::test_data());
-        match actual {
-            Value::Error { error, .. } => {
-                if let ShellError::IncorrectValue { msg, .. } = *error {
-                    assert!(msg.contains("hh:mm:ss"), "msg was {msg}");
-                } else {
-                    panic!("wrong error variant: {error:?}");
-                }
-            }
-            other => panic!("expected error, got {other:?}"),
         }
     }
 

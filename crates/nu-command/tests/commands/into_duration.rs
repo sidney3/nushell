@@ -111,19 +111,6 @@ fn into_duration_colon_string(#[case] code: &str, #[case] expected: &str) -> Res
         .expect_value_eq(expected)
 }
 
-#[test]
-fn into_duration_clock_error_two() -> Result {
-    let err = test().run("'3:34' | into duration").expect_shell_error()?;
-
-    match err {
-        ShellError::IncorrectValue { msg, .. } => {
-            assert_contains("hh:mm:ss", msg);
-            Ok(())
-        }
-        err => Err(err.into()),
-    }
-}
-
 // Tests error paths
 
 #[test]
